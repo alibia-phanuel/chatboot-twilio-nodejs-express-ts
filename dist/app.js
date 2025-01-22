@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -18,14 +27,14 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // Initialisation de Supabase
 const supabase = (0, supabase_js_1.createClient)(SUPABASE_URL, SUPABASE_KEY);
 // Fonction pour récupérer tous les produits
-const getAllProducts = async () => {
-    const { data, error } = await supabase.from("products").select("*");
+const getAllProducts = () => __awaiter(void 0, void 0, void 0, function* () {
+    const { data, error } = yield supabase.from("products").select("*");
     if (error) {
         console.error("Erreur lors de la récupération des produits :", error.message);
         return [];
     }
     return data;
-};
+});
 const app = (0, express_1.default)();
 // Middleware pour parser le JSON
 app.use(express_1.default.json());
@@ -64,7 +73,7 @@ const processMessage = (message) => {
 app.get("/", (req, res) => {
     res.send("Bienvenue sur le serveur Node.js avec TypeScript !");
 });
-app.post("/webhook/whatsapp", async (req, res) => {
+app.post("/webhook/whatsapp", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { Body, From } = req.body;
     console.log(`Message reçu de ${From}: ${Body}`);
     // Traiter le message et générer une réponse
@@ -73,12 +82,12 @@ app.post("/webhook/whatsapp", async (req, res) => {
         console.log(`Message reçu de ${From}: ${Body}`);
         const responseMessage = processMessage(Body);
         // Envoyer une réponse via WhatsApp
-        await (0, WA_send_message_1.sendMessage)(responseMessage, From);
+        yield (0, WA_send_message_1.sendMessage)(responseMessage, From);
         console.log("Réponse envoyée avec succès !");
         res.status(200).send("Message traité avec succès.");
         // LOGIQUE FACEBOOK
-        const logAllProducts = async () => {
-            const products = await getAllProducts(); // Attendre la récupération des produits
+        const logAllProducts = () => __awaiter(void 0, void 0, void 0, function* () {
+            const products = yield getAllProducts(); // Attendre la récupération des produits
             const productIds = products.map((product) => product.product_id); // recupere tout les produit id
             const chaine = Body;
             const recherche = productIds;
@@ -86,22 +95,25 @@ app.post("/webhook/whatsapp", async (req, res) => {
             const correspondance = recherche.find((item) => chaine.includes(item));
             if (correspondance) {
                 console.log("Il y a une correspondance avec : " + correspondance);
-                async function getArticleByName(nom) {
-                    const { data, error } = await supabase
-                        .from("products") // Nom de la table dans Supabase
-                        .select("*") // Sélectionner tous les champs
-                        .eq("product_id", nom); // Filtrer par le champ 'nom'
-                    if (error) {
-                        console.error("Erreur de récupération des données:", error);
-                        return null;
-                    }
-                    return data;
+                function getArticleByName(nom) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const { data, error } = yield supabase
+                            .from("products") // Nom de la table dans Supabase
+                            .select("*") // Sélectionner tous les champs
+                            .eq("product_id", nom); // Filtrer par le champ 'nom'
+                        if (error) {
+                            console.error("Erreur de récupération des données:", error);
+                            return null;
+                        }
+                        return data;
+                    });
                 }
                 // Appel de la fonction avec le nom d'article que vous recherchez
-                getArticleByName(correspondance).then(async (product) => {
+                getArticleByName(correspondance).then((product) => __awaiter(void 0, void 0, void 0, function* () {
+                    var _a, _b;
                     if (product && product.length > 0) {
-                        const imageOne = product[0]?.images[0];
-                        const imageTwo = product[0]?.images[1];
+                        const imageOne = (_a = product[0]) === null || _a === void 0 ? void 0 : _a.images[0];
+                        const imageTwo = (_b = product[0]) === null || _b === void 0 ? void 0 : _b.images[1];
                         // const imageThree = product[0]?.images[2];
                         // const imageFoor = product[0]?.images[3];
                         console.log(product[0]);
@@ -111,22 +123,22 @@ app.post("/webhook/whatsapp", async (req, res) => {
 2. *${product[0].question_2}*
 3. *${product[0].question_3}*
 `;
-                        await (0, WA_send_message_1.sendMessage)(messageone, From, [imageOne]);
-                        await (0, WA_send_message_1.sendMessage)(messagetwo, From, [imageTwo]);
+                        yield (0, WA_send_message_1.sendMessage)(messageone, From, [imageOne]);
+                        yield (0, WA_send_message_1.sendMessage)(messagetwo, From, [imageTwo]);
                     }
                     else {
                         console.log("Aucun article trouvé.");
                     }
-                });
+                }));
             }
             else {
                 console.log("Aucune correspondance trouvée.");
             }
-        };
+        });
         logAllProducts();
         // Exemple d'utilisation
         const message = Body;
-        const productidClient = await (0, processFacebookLink_1.default)(message);
+        const productidClient = yield (0, processFacebookLink_1.default)(message);
         if (productidClient) {
             // console.log("Identifiant formaté:", productidClient.formattedId);
             // Exemple d'appel avec l'ID du produit
@@ -140,29 +152,31 @@ app.post("/webhook/whatsapp", async (req, res) => {
                      * @param clientIdProductId - L'ID du produit reçu côté client.
                      * @returns Les détails du produit ou une erreur.
                      */
-                    async function getProductById(clientIdProductId) {
-                        try {
-                            const { data, error } = await supabase
-                                .from("products") // Nom de la table
-                                .select("*") // Sélectionner toutes les colonnes
-                                .eq("product_id", clientIdProductId) // Filtrer par productId
-                                .single(); // Retourner un seul résultat
-                            if (error) {
-                                throw new Error(`Erreur lors de la récupération du produit : ${error.message}`);
+                    function getProductById(clientIdProductId) {
+                        return __awaiter(this, void 0, void 0, function* () {
+                            try {
+                                const { data, error } = yield supabase
+                                    .from("products") // Nom de la table
+                                    .select("*") // Sélectionner toutes les colonnes
+                                    .eq("product_id", clientIdProductId) // Filtrer par productId
+                                    .single(); // Retourner un seul résultat
+                                if (error) {
+                                    throw new Error(`Erreur lors de la récupération du produit : ${error.message}`);
+                                }
+                                return data; // Retourner les détails du produit
                             }
-                            return data; // Retourner les détails du produit
-                        }
-                        catch (error) {
-                            console.error("Erreur :", error);
-                            return null;
-                        }
+                            catch (error) {
+                                console.error("Erreur :", error);
+                                return null;
+                            }
+                        });
                     }
                     // Exemple d'appel de la fonction
                     const clientProductId = id; // ID reçu côté client
-                    getProductById(clientProductId).then(async (product) => {
+                    getProductById(clientProductId).then((product) => __awaiter(void 0, void 0, void 0, function* () {
                         if (product) {
-                            const imageOne = product?.images[0];
-                            const imageTwo = product?.images[1];
+                            const imageOne = product === null || product === void 0 ? void 0 : product.images[0];
+                            const imageTwo = product === null || product === void 0 ? void 0 : product.images[1];
                             // console.log("Produit trouvé :", product.images[0]);
                             const messageone = `*${product.delivery_fee}*`;
                             const messagetwo = `
@@ -170,13 +184,13 @@ app.post("/webhook/whatsapp", async (req, res) => {
 2. *${product.question_2}*
 3. *${product.question_3}* 
 `;
-                            await (0, WA_send_message_1.sendMessage)(messageone, From, imageOne);
-                            await (0, WA_send_message_1.sendMessage)(messagetwo, From, imageTwo);
+                            yield (0, WA_send_message_1.sendMessage)(messageone, From, imageOne);
+                            yield (0, WA_send_message_1.sendMessage)(messagetwo, From, imageTwo);
                         }
                         else {
                             console.log("Aucun produit trouvé pour cet ID.");
                         }
-                    });
+                    }));
                 }
                 else {
                     console.log("Aucun ID trouvé avec les deux tokens.");
@@ -191,5 +205,5 @@ app.post("/webhook/whatsapp", async (req, res) => {
         console.error("Erreur lors du traitement du message :", error);
         res.status(500).send("Erreur lors du traitement du message.");
     }
-});
+}));
 exports.default = app;
