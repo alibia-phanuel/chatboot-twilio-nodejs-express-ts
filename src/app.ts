@@ -8,9 +8,8 @@ import { createClient } from "@supabase/supabase-js";
 import getProductIdFromPages from "./helper-dunction/getProductDetailsFromPages";
 require("ts-node/register");
 // Configure Supabase
-const SUPABASE_URL = "https://njythokucbnxigcwzvqj.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qeXRob2t1Y2JueGlnY3d6dnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcyNDA4NjAsImV4cCI6MjA1MjgxNjg2MH0.WPfZ7PGRd_mASeos2Gw_XdHaMqcXkBWhiNSQnx4DoFk";
+const SUPABASE_URL = process.env.SUPABASE_URL as string;
+const SUPABASE_KEY = process.env.SUPABASE_KEY as string;
 
 // Initialisation de Supabase
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);

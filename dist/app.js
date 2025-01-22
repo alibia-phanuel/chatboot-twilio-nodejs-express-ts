@@ -22,8 +22,8 @@ const supabase_js_1 = require("@supabase/supabase-js");
 const getProductDetailsFromPages_1 = __importDefault(require("./helper-dunction/getProductDetailsFromPages"));
 require("ts-node/register");
 // Configure Supabase
-const SUPABASE_URL = "https://njythokucbnxigcwzvqj.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qeXRob2t1Y2JueGlnY3d6dnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcyNDA4NjAsImV4cCI6MjA1MjgxNjg2MH0.WPfZ7PGRd_mASeos2Gw_XdHaMqcXkBWhiNSQnx4DoFk";
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 // Initialisation de Supabase
 const supabase = (0, supabase_js_1.createClient)(SUPABASE_URL, SUPABASE_KEY);
 // Fonction pour récupérer tous les produits
